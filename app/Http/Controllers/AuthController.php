@@ -88,14 +88,13 @@ class AuthController extends Controller
             'alamat' => 'required|string',
             'no_hp' => 'required|string',
             'nama_lengkap_suami' => 'required|string',
-            'usia_suami' => 'required|string',
+            'usia_suami' => 'required|integer',
             'pendidikan_terakhir_suami' => 'required|string',
             'pekerjaan_terakhir_suami' => 'required|string',
             'anak' => 'required|array',
             'anak.*.nama_lengkap_anak' => 'required|string',
-            'anak.*.usia_anak' => 'required|string',
+            'anak.*.usia_anak' => 'required|integer',
             'anak.*.pendidikan_terakhir_anak' => 'required|string',
-
         ]);
 
         if ($validate->fails()) {
@@ -121,14 +120,16 @@ class AuthController extends Controller
                 UserProfile::create([
                     'users_id' => $user->id,
                     'age' => $data['usia_pengguna'],
+                    'no_hp' => $data['no_hp'],
                     'last_education' => $data['pendidikan_terakhir_pengguna'],
                     'last_job' => $data['pekerjaan_terakhir_pengguna'],
-                    'address' => $data['address']
+                    'address' => $data['alamat']
                 ]);
 
                 // Buat Data Suami
                 UserHusband::create([
                     'users_id' => $user->id,
+                    "name" => $data['nama_lengkap_suami'],
                     'age' => $data['usia_suami'],
                     'last_education' => $data['pendidikan_terakhir_suami'],
                     'last_job' => $data['pekerjaan_terakhir_suami']
@@ -138,8 +139,9 @@ class AuthController extends Controller
                 foreach ($data['anak'] as $a) {
                     UserChild::create([
                         'users_id' => $user->id,
-                        'age' => $data['usia_anak'],
-                        'last_education' => $data['pendidikan_terakhir_anak']
+                        'name' => $a['nama_lengkap_anak'],
+                        'age' => $a['usia_anak'],
+                        'last_education' => $a['pendidikan_terakhir_anak']
                     ]);
                 }
 

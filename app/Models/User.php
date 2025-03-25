@@ -4,14 +4,16 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 use Symfony\Component\Uid\UuidV7;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
@@ -60,5 +62,20 @@ class User extends Authenticatable
                 $model->id = UuidV7::v7()->toRfc4122();
             }
         });
+    }
+
+    public function userProfile(): HasOne
+    {
+        return $this->hasOne(UserProfile::class, 'users_id');
+    }
+
+    public function userHusband(): HasOne
+    {
+        return $this->hasOne(UserProfile::class, 'users_id');
+    }
+
+    public function userChild(): HasOne
+    {
+        return $this->hasOne(UserChild::class, 'users_id');
     }
 }

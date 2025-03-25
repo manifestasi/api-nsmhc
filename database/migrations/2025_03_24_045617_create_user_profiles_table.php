@@ -17,10 +17,10 @@ return new class extends Migration
             $table->foreign('users_id')->on('users')->references('id')->onDelete('cascade');
             $table->string('foto')->nullable();
             $table->integer('age');
+            $table->string('no_hp');
             $table->string('last_education');
             $table->string('last_job');
             $table->string('address');
-            $table->timestamps();
         });
     }
 

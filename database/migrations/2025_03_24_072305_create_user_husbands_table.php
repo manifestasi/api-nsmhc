@@ -19,7 +19,6 @@ return new class extends Migration
             $table->integer('age');
             $table->string('last_education');
             $table->string('last_job');
-            $table->timestamps();
         });
     }
 

@@ -26,6 +26,7 @@ class UserSeeder extends Seeder
         UserProfile::create([
             'users_id' => $user->id,
             'age' => 15,
+            'no_hp' => '088884884848',
             'last_education' => 'Test123124124',
             'last_job' => 'asdfasdfsdafsdf',
             'address' => 'adsfasdfsdafasdfsdaf'
