@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -71,11 +72,19 @@ class User extends Authenticatable
 
     public function userHusband(): HasOne
     {
-        return $this->hasOne(UserProfile::class, 'users_id');
+        return $this->hasOne(UserHusband::class, 'users_id');
     }
 
-    public function userChild(): HasOne
+    public function userChild(): HasMany
     {
-        return $this->hasOne(UserChild::class, 'users_id');
+        return $this->hasMany(UserChild::class, 'users_id');
+    }
+
+    public function scopeFilter($query, array $filters)
+    {
+        $query->when($filters['search'] ?? false, function ($query, $search) {
+            return $query->where('name', 'like', "%$search%")
+                ->orWhere('email', 'like', "%$search%");
+        });
     }
 }

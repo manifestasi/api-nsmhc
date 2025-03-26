@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\DetailUserResource;
 use App\Http\Resources\ProfileResource;
+use App\Models\User;
 use App\Models\UserChild;
 use App\Models\UserHusband;
 use App\Models\UserProfile;
@@ -15,6 +17,48 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
+    public function showDetailUser(User $user)
+    {
+        try {
+            $dataDetailUser = $user->load(['userProfile', 'userHusband', 'userChild']);
+
+            return response()->json([
+                'code' => 200,
+                'message' => 'Data detail pelanggan berhasil diambil',
+                'data' => new DetailUserResource($dataDetailUser)
+            ]);
+        } catch (\Throwable $th) {
+            Log::error('UserController.showDetailUser: ' . $th->getMessage());
+            return response()->json([
+                'code' => 500,
+                'message' => "Something wrong",
+            ], 500);
+        }
+    }
+
+    public function showAllUser()
+    {
+        try {
+            $user = User::with('userProfile')
+                ->filter(request(['search']))
+                ->orderByDesc('created_at')
+                ->paginate(8)
+                ->withQueryString();
+
+            return response()->json([
+                'code' => 200,
+                'message' => 'Data pengguna berhasil diambil',
+                'data' => $user
+            ]);
+        } catch (\Throwable $th) {
+            Log::error('UserController.showAllUser: ' . $th->getMessage());
+            return response()->json([
+                'code' => 500,
+                'message' => "Something wrong",
+            ], 500);
+        }
+    }
+
     public function showHusband()
     {
         try {

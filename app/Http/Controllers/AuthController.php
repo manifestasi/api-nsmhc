@@ -8,6 +8,7 @@ use App\Models\UserChild;
 use App\Models\UserHusband;
 use App\Models\UserProfile;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -58,10 +59,27 @@ class AuthController extends Controller
         }
     }
 
-    public function logout(Request $request)
+    public function logoutAdmin()
     {
         try {
-            $request->user()->currentAccessToken()->delete();
+            Auth::guard('admin')->user()->currentAccessToken()->delete();
+            return response()->json([
+                'code' => '200',
+                'message' => 'Logout berhasil'
+            ]);
+        } catch (\Throwable $th) {
+            Log::error('UserController.logoutAdmin: ' . $th->getMessage());
+            return response()->json([
+                'code' => 500,
+                'message' => "Something wrong",
+            ], 500);
+        }
+    }
+
+    public function logoutUser()
+    {
+        try {
+            Auth::guard('user')->user()->currentAccessToken()->delete();
 
             return response()->json([
                 'code' => '200',
