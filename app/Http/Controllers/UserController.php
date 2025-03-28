@@ -53,10 +53,9 @@ class UserController extends Controller
             'usia_suami' => 'required|integer',
             'pendidikan_terakhir_suami' => 'required|string',
             'pekerjaan_terakhir_suami' => 'required|string',
-            'anak' => 'required|array',
-            'anak.*.nama_lengkap_anak' => 'required|string',
-            'anak.*.usia_anak' => 'required|integer',
-            'anak.*.pendidikan_terakhir_anak' => 'required|string',
+            'nama_lengkap_anak' => 'required|string',
+            'usia_anak' => 'required|integer',
+            'pendidikan_terakhir_anak' => 'required|string',
         ]);
 
         if ($validate->fails()) {
@@ -95,16 +94,13 @@ class UserController extends Controller
                     ]);
 
                 UserChild::where('users_id', $user->id)
-                    ->delete();
-
-                foreach ($data['anak'] as $a) {
-                    UserChild::create([
+                    ->first()
+                    ->update([
                         'users_id' => $user->id,
-                        'name' => $a['nama_lengkap_anak'],
-                        'age' => $a['usia_anak'],
-                        'last_education' => $a['pendidikan_terakhir_anak']
+                        'name' => $data['nama_lengkap_anak'],
+                        'age' => $data['usia_anak'],
+                        'last_education' => $data['pendidikan_terakhir_anak']
                     ]);
-                }
 
                 DB::commit();
                 return response()->json([
@@ -188,15 +184,12 @@ class UserController extends Controller
     {
         try {
             $user = Auth::guard('user')->user();
-            $userChild = UserChild::where('users_id', $user->id)->get();
+            $userChild = UserChild::where('users_id', $user->id)->first();
 
             return response()->json([
                 'code' => 200,
                 'message' => 'Data anak berhasil diambil',
-                'data' => [
-                    'number_of_children' => $userChild->count(),
-                    'children' => $userChild
-                ]
+                'data' => $userChild
             ]);
         } catch (\Throwable $th) {
             Log::error('UserController.showChildren: ' . $th->getMessage());

@@ -76,9 +76,9 @@ class User extends Authenticatable
         return $this->hasOne(UserHusband::class, 'users_id');
     }
 
-    public function userChild(): HasMany
+    public function userChild(): HasOne
     {
-        return $this->hasMany(UserChild::class, 'users_id');
+        return $this->hasOne(UserChild::class, 'users_id');
     }
 
     public function reactions(): BelongsToMany

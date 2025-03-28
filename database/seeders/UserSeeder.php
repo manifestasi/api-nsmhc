@@ -40,23 +40,30 @@ class UserSeeder extends Seeder
             'last_job' => 'asdfsadfsdf'
         ]);
 
-        $child = [
-            [
-                'name' => 'test1',
-                'users_id' => $user->id,
-                'age' => 20,
-                'last_education' => 'asdfsadfsdaf'
-            ],
-            [
-                'name' => 'test2',
-                'users_id' => $user->id,
-                'age' => 20,
-                'last_education' => 'asdfsadfsdaf'
-            ],
-        ];
+        UserChild::create([
+            'name' => 'test1',
+            'users_id' => $user->id,
+            'age' => 20,
+            'last_education' => 'asdfsadfsdaf'
+        ]);
 
-        foreach ($child as $c) {
-            UserChild::create($c);
-        }
+        // $child = [
+        //     [
+        //         'name' => 'test1',
+        //         'users_id' => $user->id,
+        //         'age' => 20,
+        //         'last_education' => 'asdfsadfsdaf'
+        //     ],
+        //     [
+        //         'name' => 'test2',
+        //         'users_id' => $user->id,
+        //         'age' => 20,
+        //         'last_education' => 'asdfsadfsdaf'
+        //     ],
+        // ];
+
+        // foreach ($child as $c) {
+        //     UserChild::create($c);
+        // }
     }
 }
