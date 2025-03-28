@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\AllUserResource;
 use App\Http\Resources\DetailUserResource;
 use App\Http\Resources\ProfileResource;
 use App\Models\User;
+use App\Models\UserAppOpen;
 use App\Models\UserChild;
 use App\Models\UserHusband;
 use App\Models\UserProfile;
@@ -17,6 +19,109 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
+    public function trackOpen()
+    {
+        try {
+            $user = Auth::guard('user')->user();
+            UserAppOpen::create([
+                'users_id' => $user->id
+            ]);
+
+            return response()->json([
+                'code' => 200,
+                'message' => 'Lacak aplikasi dibuka berhasil disimpan'
+            ]);
+        } catch (\Throwable $th) {
+            Log::error('UserController.trackOpen: ' . $th->getMessage());
+            return response()->json([
+                'code' => 500,
+                'message' => "Something wrong",
+            ], 500);
+        }
+    }
+
+    public function updateUser(Request $request, User $user)
+    {
+        $validate = Validator::make($request->all(), [
+            'nama_lengkap_pengguna' => 'required|string',
+            'usia_pengguna' => 'required|integer',
+            'pendidikan_terakhir_pengguna' => 'required|string',
+            'pekerjaan_terakhir_pengguna' => 'required|string',
+            'alamat' => 'required|string',
+            'no_hp' => 'required|string',
+            'nama_lengkap_suami' => 'required|string',
+            'usia_suami' => 'required|integer',
+            'pendidikan_terakhir_suami' => 'required|string',
+            'pekerjaan_terakhir_suami' => 'required|string',
+            'anak' => 'required|array',
+            'anak.*.nama_lengkap_anak' => 'required|string',
+            'anak.*.usia_anak' => 'required|integer',
+            'anak.*.pendidikan_terakhir_anak' => 'required|string',
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'code' => 400,
+                'message' => $validate->errors()->first(),
+                'error' => $validate->errors()
+            ], 400);
+        } else {
+            try {
+                DB::beginTransaction();
+                $data = $validate->validated();
+
+                $user->update([
+                    'name' => $data['nama_lengkap_pengguna']
+                ]);
+
+                UserProfile::where('users_id', $user->id)
+                    ->first()
+                    ->update([
+                        'age' => $data['usia_pengguna'],
+                        'no_hp' => $data['no_hp'],
+                        'last_education' => $data['pendidikan_terakhir_pengguna'],
+                        'last_job' => $data['pekerjaan_terakhir_pengguna'],
+                        'address' => $data['alamat']
+                    ]);
+
+                UserHusband::where('users_id', $user->id)
+                    ->first()
+                    ->update([
+                        'users_id' => $user->id,
+                        'name' => $data['nama_lengkap_suami'],
+                        'age' => $data['usia_suami'],
+                        'last_education' => $data['pendidikan_terakhir_suami'],
+                        'last_job' => $data['pekerjaan_terakhir_suami']
+                    ]);
+
+                UserChild::where('users_id', $user->id)
+                    ->delete();
+
+                foreach ($data['anak'] as $a) {
+                    UserChild::create([
+                        'users_id' => $user->id,
+                        'name' => $a['nama_lengkap_anak'],
+                        'age' => $a['usia_anak'],
+                        'last_education' => $a['pendidikan_terakhir_anak']
+                    ]);
+                }
+
+                DB::commit();
+                return response()->json([
+                    'code' => 200,
+                    'message' => 'Data user berhasil diperbarui'
+                ]);
+            } catch (\Throwable $th) {
+                DB::rollback();
+                Log::error('UserController.updateUser: ' . $th->getMessage());
+                return response()->json([
+                    'code' => 500,
+                    'message' => "Something wrong",
+                ], 500);
+            }
+        }
+    }
+
     public function showDetailUser(User $user)
     {
         try {
@@ -39,7 +144,7 @@ class UserController extends Controller
     public function showAllUser()
     {
         try {
-            $user = User::with('userProfile')
+            $user = User::with('userProfile', 'userHusband', 'userChild')
                 ->filter(request(['search']))
                 ->orderByDesc('created_at')
                 ->paginate(8)
@@ -48,7 +153,7 @@ class UserController extends Controller
             return response()->json([
                 'code' => 200,
                 'message' => 'Data pengguna berhasil diambil',
-                'data' => $user
+                'data' => new AllUserResource($user)
             ]);
         } catch (\Throwable $th) {
             Log::error('UserController.showAllUser: ' . $th->getMessage());

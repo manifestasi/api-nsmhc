@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ContentController;
+use App\Http\Controllers\ReactionController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -12,8 +14,14 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth:sanctum', 'abilities:admin'])->group(function () {
     Route::prefix('user')->group(function () {
         Route::get('/all', [UserController::class, 'showAllUser']);
-        Route::get('/detail/{user}', [UserController::class, 'showDetailUser']);
+        Route::get('/{user}/detail', [UserController::class, 'showDetailUser']);
+        Route::get('/{user}/security', [AuthController::class, 'showDataSecurityUser']);
+        Route::put('/{user}/edit', [UserController::class, 'updateUser']);
+        Route::put('/{user}/security', [AuthController::class, 'updateDataSecurityUser']);
     });
+
+    Route::get('/content/progress', [ContentController::class, 'showProgress']);
+    Route::get('/reaction', [ReactionController::class, 'showUserReaction']);
 });
 
 Route::middleware(['auth:sanctum', 'abilities:user'])->group(function () {
@@ -22,6 +30,9 @@ Route::middleware(['auth:sanctum', 'abilities:user'])->group(function () {
         Route::post('/child', [UserController::class, 'updateChildren']);
         Route::post('/husband', [UserController::class, 'updateHusband']);
     });
+    Route::post('/content/{content}', [ContentController::class, 'storeProgress']);
+    Route::post('/reaction', [ReactionController::class, 'storeReaction']);
+    Route::post('/track', [UserController::class, 'trackOpen']);
 });
 
 

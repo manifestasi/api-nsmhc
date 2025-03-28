@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -78,6 +79,26 @@ class User extends Authenticatable
     public function userChild(): HasMany
     {
         return $this->hasMany(UserChild::class, 'users_id');
+    }
+
+    public function reactions(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Reaction::class,
+            'user_reactions',
+            'users_id',
+            'reactions_id'
+        );
+    }
+
+    public function contents(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Content::class,
+            'user_contents',
+            'users_id',
+            'contents_id'
+        );
     }
 
     public function scopeFilter($query, array $filters)

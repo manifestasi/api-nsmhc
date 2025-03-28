@@ -11,9 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('questions', function (Blueprint $table) {
+        Schema::create('user_app_opens', function (Blueprint $table) {
             $table->id();
-            $table->string('question_text');
+            $table->uuid('users_id');
+            $table->foreign('users_id')->on('users')->references('id')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -23,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('questions');
+        Schema::dropIfExists('user_app_opens');
     }
 };

@@ -16,10 +16,65 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
+    public function updateDataSecurityUser(Request $request, User $user)
+    {
+        $validate = Validator::make($request->all(), [
+            'email' => 'required|email|unique:users',
+            'password' => 'required|min:8|confirmed',
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'code' => 400,
+                'message' => $validate->errors()->first(),
+                'error' => $validate->errors()
+            ], 400);
+        } else {
+            try {
+                $data = $validate->validated();
+                $user->update([
+                    'email' => $data['email'],
+                    'password' => Hash::make($data['password'])
+                ]);
+
+                return response()->json([
+                    'code' => 200,
+                    'message' => 'Data keamanan berhasil di perbarui'
+                ]);
+            } catch (\Throwable $th) {
+                Log::error('AuthController.updateDataSecurityUser: ' . $th->getMessage());
+                return response()->json([
+                    'code' => 500,
+                    'message' => "Something wrong",
+                ], 500);
+            }
+        }
+    }
+
+    public function showDataSecurityUser(User $user)
+    {
+        try {
+            return response()->json([
+                'code' => 200,
+                'message' => 'Data keamanan user berhasil diambil',
+                'data' => [
+                    'nama' => $user->name,
+                    'email' => $user->email
+                ]
+            ]);
+        } catch (\Throwable $th) {
+            Log::error('AuthController.loginUser: ' . $th->getMessage());
+            return response()->json([
+                'code' => 500,
+                'message' => "Something wrong",
+            ], 500);
+        }
+    }
+
     public function loginAdmin(Request $request)
     {
         $validate = Validator::make($request->all(), [
-            'email' => 'required',
+            'email' => 'required|email',
             'password' => 'required'
         ]);
 
@@ -50,7 +105,7 @@ class AuthController extends Controller
                     'token' => $token->plainTextToken
                 ]);
             } catch (\Throwable $th) {
-                Log::error('UserController.loginUser: ' . $th->getMessage());
+                Log::error('AuthController.loginUser: ' . $th->getMessage());
                 return response()->json([
                     'code' => 500,
                     'message' => "Something wrong",
@@ -68,7 +123,7 @@ class AuthController extends Controller
                 'message' => 'Logout berhasil'
             ]);
         } catch (\Throwable $th) {
-            Log::error('UserController.logoutAdmin: ' . $th->getMessage());
+            Log::error('AuthController.logoutAdmin: ' . $th->getMessage());
             return response()->json([
                 'code' => 500,
                 'message' => "Something wrong",
@@ -86,7 +141,7 @@ class AuthController extends Controller
                 'message' => 'Logout berhasil'
             ]);
         } catch (\Throwable $th) {
-            Log::error('UserController.logoutUser: ' . $th->getMessage());
+            Log::error('AuthController.logoutUser: ' . $th->getMessage());
             return response()->json([
                 'code' => 500,
                 'message' => "Something wrong",
@@ -171,7 +226,7 @@ class AuthController extends Controller
                 ], 201);
             } catch (\Throwable $th) {
                 DB::rollback();
-                Log::error('UserController.registerUser: ' . $th->getMessage());
+                Log::error('AuthController.registerUser: ' . $th->getMessage());
                 return response()->json([
                     'code' => 500,
                     'message' => "Something wrong",
@@ -214,7 +269,7 @@ class AuthController extends Controller
                     'token' => $token->plainTextToken
                 ]);
             } catch (\Throwable $th) {
-                Log::error('UserController.loginUser: ' . $th->getMessage());
+                Log::error('AuthController.loginUser: ' . $th->getMessage());
                 return response()->json([
                     'code' => 500,
                     'message' => "Something wrong",
