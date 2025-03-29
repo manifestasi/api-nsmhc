@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class ReactionController extends Controller
 {
@@ -21,18 +22,33 @@ class ReactionController extends Controller
                 ->withQueryString();
             $allReaction = Reaction::all();
 
+            // $formattedUsers = collect($users->items())->map(function ($user) use ($allReaction) {
+            //     return [
+            //         'id' => $user->id,
+            //         'name' => $user->name,
+            //         'reactions' => $allReaction->map(function ($reaction) use ($user) {
+            //             return [
+            //                 'id' => $reaction->id,
+            //                 'name' => $reaction->name,
+            //                 'is_selected' => $user->reactions->contains('id', $reaction->id)
+            //             ];
+            //         })
+            //     ];
+            // });
+
+
             $formattedUsers = collect($users->items())->map(function ($user) use ($allReaction) {
-                return [
+                $formattedReactions = $allReaction->mapWithKeys(function ($reaction) use ($user) {
+                    // Konversi nama reaksi ke lowercase dan ubah spasi menjadi underscore
+                    $reactionKey = (string) Str::of($reaction->name)->lower()->replace(' ', '_');
+
+                    return [$reactionKey => $user->reactions->contains('id', $reaction->id)];
+                });
+
+                return array_merge([
                     'id' => $user->id,
-                    'name' => $user->name,
-                    'reactions' => $allReaction->map(function ($reaction) use ($user) {
-                        return [
-                            'id' => $reaction->id,
-                            'name' => $reaction->name,
-                            'is_selected' => $user->reactions->contains('id', $reaction->id)
-                        ];
-                    })
-                ];
+                    'name' => $user->name
+                ], $formattedReactions->toArray());
             });
 
             return response()->json([

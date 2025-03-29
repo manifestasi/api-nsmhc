@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class ContentController extends Controller
 {
@@ -21,18 +22,32 @@ class ContentController extends Controller
                 ->withQueryString();
             $allContent = Content::all();
 
+            // $formattedUsers = collect($users->items())->map(function ($user) use ($allContent) {
+            //     return [
+            //         'id' => $user->id,
+            //         'name' => $user->name,
+            //         'contents' => $allContent->map(function ($content) use ($user) {
+            //             return [
+            //                 'id' => $content->id,
+            //                 'name' => $content->name,
+            //                 'is_completed' => $user->contents->contains('id', $content->id)
+            //             ];
+            //         })
+            //     ];
+            // });
+
             $formattedUsers = collect($users->items())->map(function ($user) use ($allContent) {
-                return [
+                $formattedContents = $allContent->mapWithKeys(function ($content) use ($user) {
+                    // Konversi nama reaksi ke lowercase dan ubah spasi menjadi underscore
+                    $contentKey = (string) Str::of($content->name)->lower()->replace(' ', '_');
+
+                    return [$contentKey => $user->contents->contains('id', $content->id)];
+                });
+
+                return array_merge([
                     'id' => $user->id,
-                    'name' => $user->name,
-                    'contents' => $allContent->map(function ($content) use ($user) {
-                        return [
-                            'id' => $content->id,
-                            'name' => $content->name,
-                            'is_completed' => $user->contents->contains('id', $content->id)
-                        ];
-                    })
-                ];
+                    'name' => $user->name
+                ], $formattedContents->toArray());
             });
 
 
