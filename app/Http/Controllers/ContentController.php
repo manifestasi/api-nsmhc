@@ -12,6 +12,37 @@ use Illuminate\Support\Str;
 
 class ContentController extends Controller
 {
+    public function countUserCompletedProgress()
+    {
+        try {
+            $user = User::with('contents')->get();
+
+            $content = Content::count();
+
+            $sum = 0;
+
+            foreach ($user as $u) {
+                $isCompleted = $u->contents->count() == $content;
+                if ($isCompleted) {
+                    $sum++;
+                }
+            }
+            return response()->json([
+                'code' => 200,
+                'message' => 'Hitung pengguna yang menyelesaikan content berhasil',
+                'data' => [
+                    'total_user' => $user->count(),
+                    'user_completed_progress' => $sum
+                ]
+            ]);
+        } catch (\Throwable $th) {
+            Log::error('ContentController.countUserCompletedProgress: ' . $th->getMessage());
+            return response()->json([
+                'code' => 500,
+                'message' => "Something wrong",
+            ], 500);
+        }
+    }
     public function showProgress()
     {
         try {

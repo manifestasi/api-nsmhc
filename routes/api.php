@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ContentController;
+use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\ReactionController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -22,6 +23,9 @@ Route::middleware(['auth:sanctum', 'abilities:admin'])->group(function () {
 
     Route::get('/content/progress', [ContentController::class, 'showProgress']);
     Route::get('/reaction', [ReactionController::class, 'showUserReaction']);
+    Route::get('/question/answer', [QuestionController::class, 'getDataGrafikQuestionAnswer']);
+
+    Route::get('/progress/summary', [ContentController::class, 'countUserCompletedProgress']);
 });
 
 Route::middleware(['auth:sanctum', 'abilities:user'])->group(function () {
@@ -33,6 +37,7 @@ Route::middleware(['auth:sanctum', 'abilities:user'])->group(function () {
     Route::post('/content/{content}', [ContentController::class, 'storeProgress']);
     Route::post('/reaction', [ReactionController::class, 'storeReaction']);
     Route::post('/track', [UserController::class, 'trackOpen']);
+    Route::post('/question/answer', [QuestionController::class, 'storeQuestionAnswer']);
 });
 
 
