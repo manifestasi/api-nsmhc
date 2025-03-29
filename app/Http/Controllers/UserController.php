@@ -19,6 +19,47 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
+    public function showUserOpenSummary()
+    {
+        try {
+            $result = DB::table('user_app_opens')
+                ->selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, COUNT(*) as total')
+                ->groupBy('year', 'month')
+                ->orderBy('year', 'DESC')
+                ->orderBy('month', 'ASC')
+                ->get();
+
+            $totalUserAppOpen = UserAppOpen::count();
+
+            $formattedResult = $result->groupBy('year')->map(function ($items, $year) {
+                return [
+                    'year' => $year,
+                    'data' => $items->map(function ($item) {
+                        return [
+                            'month' => \Carbon\Carbon::createFromFormat('m', $item->month)->format('F'),
+                            'total' => $item->total
+                        ];
+                    })->values()
+                ];
+            })->values();
+
+            return response()->json([
+                'code' => 200,
+                'message' => 'Data user open app summary berhasil diambil',
+                'data' => [
+                    'total_app_opened' => $totalUserAppOpen,
+                    'summary' => $formattedResult
+                ]
+            ]);
+        } catch (\Throwable $th) {
+            Log::error('UserController.showUserSummary: ' . $th->getMessage());
+            return response()->json([
+                'code' => 500,
+                'message' => "Something wrong",
+            ], 500);
+        }
+    }
+
     public function trackOpen()
     {
         try {

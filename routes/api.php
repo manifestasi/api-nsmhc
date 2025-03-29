@@ -19,6 +19,7 @@ Route::middleware(['auth:sanctum', 'abilities:admin'])->group(function () {
         Route::get('/{user}/security', [AuthController::class, 'showDataSecurityUser']);
         Route::put('/{user}/edit', [UserController::class, 'updateUser']);
         Route::put('/{user}/security', [AuthController::class, 'updateDataSecurityUser']);
+        Route::get('/open/summary', [UserController::class, 'showUserOpenSummary']);
     });
 
     Route::get('/content/progress', [ContentController::class, 'showProgress']);
