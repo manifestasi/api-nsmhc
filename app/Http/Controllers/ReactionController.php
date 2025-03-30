@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ReactionResource;
 use App\Models\Reaction;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -12,6 +13,26 @@ use Illuminate\Support\Str;
 
 class ReactionController extends Controller
 {
+    public function showReactionSummary()
+    {
+        try {
+            $reaction = Reaction::with('users')->get();
+
+            return response()->json([
+                'code' => 200,
+                'message' => 'Data reaction summary berhasil diambil',
+                'data' => ReactionResource::collection($reaction)
+            ]);
+        } catch (\Throwable $th) {
+            Log::error('ReactionController.showReactionSummary: ' . $th->getMessage());
+            return response()->json([
+                'code' => 500,
+                'message' => "Something wrong",
+            ], 500);
+        }
+    }
+
+
     public function showUserReaction()
     {
         try {

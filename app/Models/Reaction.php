@@ -3,8 +3,19 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Reaction extends Model
 {
-    //
+    protected $guarded = ['id'];
+
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            User::class,
+            'user_reactions',
+            'reactions_id',
+            'users_id'
+        );
+    }
 }

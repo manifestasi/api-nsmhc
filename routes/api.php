@@ -27,6 +27,7 @@ Route::middleware(['auth:sanctum', 'abilities:admin'])->group(function () {
     Route::get('/question/answer', [QuestionController::class, 'getDataGrafikQuestionAnswer']);
 
     Route::get('/progress/summary', [ContentController::class, 'countUserCompletedProgress']);
+    Route::get('/reaction/summary', [ReactionController::class, 'showReactionSummary']);
 });
 
 Route::middleware(['auth:sanctum', 'abilities:user'])->group(function () {
