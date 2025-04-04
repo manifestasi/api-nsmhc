@@ -2,10 +2,13 @@
 
 namespace Database\Seeders;
 
+use App\Models\Content;
+use App\Models\Reaction;
 use App\Models\User;
 use App\Models\UserChild;
 use App\Models\UserHusband;
 use App\Models\UserProfile;
+use Faker\Factory;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -16,6 +19,8 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+        $faker = Factory::create();
+
         $user = User::create([
             'email' => 'mizzy12342@gmail.com',
             'name' => 'mizzy',
@@ -23,29 +28,66 @@ class UserSeeder extends Seeder
             'email_verified_at' => now()
         ]);
 
-        UserProfile::create([
-            'users_id' => $user->id,
-            'age' => 15,
-            'no_hp' => '088884884848',
-            'last_education' => 'Test123124124',
-            'last_job' => 'asdfasdfsdafsdf',
-            'address' => 'adsfasdfsdafasdfsdaf'
-        ]);
+        User::factory(20)->create();
 
-        UserHusband::create([
-            'users_id' => $user->id,
-            'name' => 'download',
-            'age' => 40,
-            'last_education' => 'asdfasdf',
-            'last_job' => 'asdfsadfsdf'
-        ]);
+        $user = User::all();
 
-        UserChild::create([
-            'name' => 'test1',
-            'users_id' => $user->id,
-            'age' => 20,
-            'last_education' => 'asdfsadfsdaf'
-        ]);
+        $reaction = Reaction::all();
+        $content = Content::all();
+
+        $totalReaction = $reaction->count();
+        $totalContent = $content->count();
+
+        $totalCompleteContent = 15;
+
+        foreach ($user as $index => $u) {
+            UserProfile::create([
+                'users_id' => $u->id,
+                'age' => 15,
+                'no_hp' => '088884884848' . $index,
+                'last_education' => 'Test123124124',
+                'last_job' => 'asdfasdfsdafsdf',
+                'address' => 'adsfasdfsdafasdfsdaf'
+            ]);
+
+            UserHusband::create([
+                'users_id' => $u->id,
+                'name' => 'download' . $index,
+                'age' => 40,
+                'last_education' => 'asdfasdf',
+                'last_job' => 'asdfsadfsdf'
+            ]);
+
+            UserChild::create([
+                'name' => 'test' . $index,
+                'users_id' => $u->id,
+                'age' => 20,
+                'last_education' => 'asdfsadfsdaf'
+            ]);
+
+            $randomNumberReaction = $faker->numberBetween(0, $totalReaction - 1);
+            foreach ($reaction as $index => $r) {
+                if ($randomNumberReaction == $index)
+                    $r->users()->attach($u->id);
+            }
+
+            $randomNumberContent = $faker->numberBetween(0, $totalContent - 1);
+
+            if ($totalCompleteContent !== 0) {
+                foreach ($content as $index => $c) {
+                    $c->users()->attach($u->id);
+                }
+                $totalCompleteContent--;
+            } else {
+                foreach ($content as $index => $c) {
+
+                    if ($randomNumberContent == $index) {
+                        break;
+                    }
+                    $c->users()->attach($u->id);
+                }
+            }
+        }
 
         // $child = [
         //     [

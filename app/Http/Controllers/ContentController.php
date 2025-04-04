@@ -116,7 +116,7 @@ class ContentController extends Controller
             $user = Auth::guard('user')->user();
             $alreadyExists = $content->users()->where('users.id', $user->id)->count();
             if (!$alreadyExists) {
-                $content->users()->sync($user->id);
+                $content->users()->attach($user->id);
             }
 
             Log::debug('ContentController.storeProgress: alreadyExist? ' . $alreadyExists);
