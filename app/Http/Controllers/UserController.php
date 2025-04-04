@@ -162,7 +162,7 @@ class UserController extends Controller
     public function showDetailUser(User $user)
     {
         try {
-            $dataDetailUser = $user->load(['userProfile', 'userHusband', 'userChild']);
+            $dataDetailUser = $user->load(['userProfile', 'userChild']);
 
             return response()->json([
                 'code' => 200,

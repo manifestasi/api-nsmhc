@@ -19,7 +19,7 @@ class AuthController extends Controller
     public function updateDataSecurityUser(Request $request, User $user)
     {
         $validate = Validator::make($request->all(), [
-            'email' => 'required|email|unique:users',
+            'email' => 'required|email',
             'password' => 'required|min:8|confirmed',
         ]);
 
