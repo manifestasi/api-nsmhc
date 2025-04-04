@@ -53,5 +53,5 @@ Route::post('/register', [AuthController::class, 'registerUser']);
 Route::prefix('profile')->group(function () {
     Route::get('/', [UserController::class, 'showProfile']);
     Route::get('/child', [UserController::class, 'showChildren']);
-    Route::get('/husband', [UserController::class, 'showHusband']);
+    // Route::get('/husband', [UserController::class, 'showHusband']);
 });

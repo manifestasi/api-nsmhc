@@ -50,14 +50,6 @@ class UserSeeder extends Seeder
                 'address' => 'adsfasdfsdafasdfsdaf'
             ]);
 
-            UserHusband::create([
-                'users_id' => $u->id,
-                'name' => 'download' . $index,
-                'age' => 40,
-                'last_education' => 'asdfasdf',
-                'last_job' => 'asdfsadfsdf'
-            ]);
-
             UserChild::create([
                 'name' => 'test' . $index,
                 'users_id' => $u->id,
