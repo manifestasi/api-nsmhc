@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Question;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -25,7 +26,8 @@ class DatabaseSeeder extends Seeder
             ContentSeeder::class,
             ReactionSeeder::class,
             UserSeeder::class,
-            ProgressSeeder::class
+            ProgressSeeder::class,
+            QuestionSeeder::class
         ]);
     }
 }
