@@ -10,6 +10,7 @@ use App\Models\UserAppOpen;
 use App\Models\UserChild;
 use App\Models\UserHusband;
 use App\Models\UserProfile;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -25,30 +26,43 @@ class UserController extends Controller
             $result = DB::table('user_app_opens')
                 ->selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, COUNT(*) as total')
                 ->groupBy('year', 'month')
-                ->orderBy('year', 'DESC')
+                ->orderBy('year', 'ASC')
                 ->orderBy('month', 'ASC')
                 ->get();
 
             $totalUserAppOpen = UserAppOpen::count();
 
-            $formattedResult = $result->groupBy('year')->map(function ($items, $year) {
+
+            $months = collect(range(1, 12))->map(function ($month) {
                 return [
-                    'year' => $year,
-                    'data' => $items->map(function ($item) {
-                        return [
-                            'month' => \Carbon\Carbon::createFromFormat('m', $item->month)->format('F'),
-                            'total' => $item->total
-                        ];
-                    })->values()
+                    'name' => Carbon::createFromFormat('m', $month)->translatedFormat('F'),
                 ];
-            })->values();
+            });
+
+
+            $years = $result->pluck('year')->unique();
+
+            $visitorData = $months->map(function ($monthRow, $index) use ($years, $result) {
+                $row = ['name' => $monthRow['name']];
+
+                foreach ($years as $year) {
+                    $data = $result->firstWhere(
+                        fn($item) =>
+                        $item->month == ($index + 1) && $item->year == $year
+                    )?->total ?? 0;
+
+                    $row[$year] = $data;
+                }
+
+                return $row;
+            })->toArray();
 
             return response()->json([
                 'code' => 200,
                 'message' => 'Data user open app summary berhasil diambil',
                 'data' => [
                     'total_app_opened' => $totalUserAppOpen,
-                    'summary' => $formattedResult
+                    'summary' => $visitorData
                 ]
             ]);
         } catch (\Throwable $th) {

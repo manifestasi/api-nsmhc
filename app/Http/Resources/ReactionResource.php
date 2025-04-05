@@ -17,7 +17,7 @@ class ReactionResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'total_users' => $this->users->count()
+            'value' => $this->users->count()
         ];
     }
 }

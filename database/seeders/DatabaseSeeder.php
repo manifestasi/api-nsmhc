@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             ContentSeeder::class,
             ReactionSeeder::class,
             UserSeeder::class,
+            ProgressSeeder::class
         ]);
     }
 }

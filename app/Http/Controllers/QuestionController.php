@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use App\Utils\Util;
 
 class QuestionController extends Controller
 {
@@ -20,24 +21,40 @@ class QuestionController extends Controller
                 ->join('answers', 'questions.id', '=', 'answers.questions_id')
                 ->select(
                     'questions.question_text as question',
-                    DB::raw("JSON_ARRAYAGG(JSON_OBJECT(
-                        'id', answers.id,
-                        'answer_text', answers.answer_text
-                    )) as answers")
+                    'answers.id as answer_id',
+                    'answers.answer_text'
                 )
-                ->groupBy('questions.question_text')
+                ->orderBy('questions.question_text')
+                ->orderBy('answers.answer_text', 'DESC') // Urutkan jawaban secara ASC
                 ->get()
-                ->map(function ($q) {
+                ->groupBy('question')
+                ->map(function ($group, $questionText) {
+                    $answers = $group->map(function ($item) {
+                        return [
+                            'id' => $item->answer_id,
+                            'answer_text' => $item->answer_text
+                        ];
+                    })->values();
+
                     return (object) [
-                        'question' => $q->question, // Pastikan ini bisa diakses sebagai properti
-                        'answers' => json_decode($q->answers, true) // Decode JSON sebagai array
+                        'question' => $questionText,
+                        'answers' => $answers
                     ];
-                });
+                })
+                ->values();
 
             return response()->json([
                 'code' => 200,
                 'message' => 'Ambil data grafik Pertanyaan dan jawaban berhasil',
-                'data' => QuestionResource::collection($question)
+                'data' => $question->map(function ($e, $i) {
+                    $answers = Util::countDuplicate($e->answers, 'answer_text');
+                    return [
+                        'name' => Util::getAbjad($i),
+                        'question' => $e->question,
+                        'yes' => $answers[0]['answer_text'] == "Sudah" ? $answers[0]['count'] : 0,
+                        'no' => $answers[1]['answer_text'] == "Belum" ? $answers[1]['count'] : 0
+                    ];
+                })
             ]);
         } catch (\Throwable $th) {
             Log::error('QuestionController.getDataGrafikQuestionAnswer: ' . $th->getMessage());
