@@ -41,13 +41,15 @@ class UserSeeder extends Seeder
         $totalCompleteContent = 15;
 
         foreach ($user as $index => $u) {
+            $no = $index + 1;
             UserProfile::create([
                 'users_id' => $u->id,
                 'age' => 15,
                 'no_hp' => '088884884848' . $index,
                 'last_education' => 'Test123124124',
                 'last_job' => 'asdfasdfsdafsdf',
-                'address' => 'adsfasdfsdafasdfsdaf'
+                'address' => 'adsfasdfsdafasdfsdaf',
+                'foto' => "foto_profile/Ein3yuwGoDZLB27gc2KZW5LVJCGqT2xjNpIlz3C5-$no.jpg"
             ]);
 
             UserChild::create([
