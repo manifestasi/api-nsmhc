@@ -103,11 +103,7 @@ class UserController extends Controller
             'pendidikan_terakhir_pengguna' => 'required|string',
             'pekerjaan_terakhir_pengguna' => 'required|string',
             'alamat' => 'required|string',
-            'no_hp' => 'required|string',
-            'nama_lengkap_suami' => 'required|string',
-            'usia_suami' => 'required|integer',
-            'pendidikan_terakhir_suami' => 'required|string',
-            'pekerjaan_terakhir_suami' => 'required|string',
+            'no_hp' => 'required|string'
             'nama_lengkap_anak' => 'required|string',
             'usia_anak' => 'required|integer',
             'pendidikan_terakhir_anak' => 'required|string',
@@ -136,16 +132,6 @@ class UserController extends Controller
                         'last_education' => $data['pendidikan_terakhir_pengguna'],
                         'last_job' => $data['pekerjaan_terakhir_pengguna'],
                         'address' => $data['alamat']
-                    ]);
-
-                UserHusband::where('users_id', $user->id)
-                    ->first()
-                    ->update([
-                        'users_id' => $user->id,
-                        'name' => $data['nama_lengkap_suami'],
-                        'age' => $data['usia_suami'],
-                        'last_education' => $data['pendidikan_terakhir_suami'],
-                        'last_job' => $data['pekerjaan_terakhir_suami']
                     ]);
 
                 UserChild::where('users_id', $user->id)
