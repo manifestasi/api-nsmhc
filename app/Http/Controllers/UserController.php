@@ -195,7 +195,7 @@ class UserController extends Controller
     public function showAllUser()
     {
         try {
-            $user = User::with('userProfile', 'userHusband', 'userChild')
+            $user = User::with('userProfile', 'userChild')
                 ->filter(request(['search']))
                 ->orderByDesc('created_at')
                 ->paginate(8)

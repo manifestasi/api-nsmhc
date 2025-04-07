@@ -19,7 +19,7 @@ class DataAllUserResource extends JsonResource
             'foto' => $this->userProfile->foto ? request()->getSchemeAndHttpHost() . '/' . $this->userProfile->foto : null,
             'name' => $this->name,
             'usia' => $this->userProfile->age,
-            'last_job_husband' => $this->userHusband->last_job,
+            'last_job' => $this->userProfile->last_job,
             'no_hp' => $this->userProfile->no_hp
         ];
     }
