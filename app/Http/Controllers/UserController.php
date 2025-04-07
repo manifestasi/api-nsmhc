@@ -103,7 +103,7 @@ class UserController extends Controller
             'pendidikan_terakhir_pengguna' => 'required|string',
             'pekerjaan_terakhir_pengguna' => 'required|string',
             'alamat' => 'required|string',
-            'no_hp' => 'required|string'
+            'no_hp' => 'required|string',
             'nama_lengkap_anak' => 'required|string',
             'usia_anak' => 'required|integer',
             'pendidikan_terakhir_anak' => 'required|string',
