@@ -19,7 +19,7 @@ class ProfileResource extends JsonResource
             'users_id' => $this->userProfile->users_id,
             'name' => $this->name,
             'email' => $this->email,
-            'foto' => $this->userProfile->foto ? request()->getSchemeAndHttpHost() . '/storage/' . $this->foto : null,
+            'foto' => $this->userProfile->foto ? request()->getSchemeAndHttpHost() . '/storage/' . $this->userProfile->foto : null,
             'age' => $this->userProfile->age,
             'no_hp' => $this->userProfile->no_hp,
             'last_education' => $this->userProfile->last_education,
