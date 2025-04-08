@@ -15,14 +15,16 @@ class ProfileResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'users_id' => $this->users_id,
-            'foto' => $this->foto ? request()->getSchemeAndHttpHost() . '/storage/' . $this->foto : null,
-            'age' => $this->age,
-            'no_hp' => $this->no_hp,
-            'last_education' => $this->last_education,
-            'last_job' => $this->last_job,
-            'address' => $this->address
+            'id' => $this->userProfile->id,
+            'users_id' => $this->userProfile->users_id,
+            'name' => $this->name,
+            'email' => $this->email,
+            'foto' => $this->userProfile->foto ? request()->getSchemeAndHttpHost() . '/storage/' . $this->foto : null,
+            'age' => $this->userProfile->age,
+            'no_hp' => $this->userProfile->no_hp,
+            'last_education' => $this->userProfile->last_education,
+            'last_job' => $this->userProfile->last_job,
+            'address' => $this->userProfile->address
         ];
     }
 }

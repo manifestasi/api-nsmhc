@@ -246,7 +246,7 @@ class UserController extends Controller
         try {
             $user = Auth::guard('user')->user();
 
-            $userProfile = UserProfile::where('users_id', $user->id)->first();
+            $userProfile = $user->load('userProfile');
 
             return response()->json([
                 'code' => 200,
