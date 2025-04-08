@@ -16,7 +16,7 @@ class DataAllUserResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'foto' => $this->userProfile->foto ? request()->getSchemeAndHttpHost() . '/' . $this->userProfile->foto : null,
+            'foto' => $this->userProfile->foto ? request()->getSchemeAndHttpHost() . '/storage/' . $this->userProfile->foto : null,
             'name' => $this->name,
             'usia' => $this->userProfile->age,
             'last_job' => $this->userProfile->last_job,

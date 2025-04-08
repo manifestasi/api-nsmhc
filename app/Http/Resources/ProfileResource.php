@@ -17,7 +17,7 @@ class ProfileResource extends JsonResource
         return [
             'id' => $this->id,
             'users_id' => $this->users_id,
-            'foto' => $this->foto ? request()->getSchemeAndHttpHost() . '/' . $this->foto : null,
+            'foto' => $this->foto ? request()->getSchemeAndHttpHost() . '/storage/' . $this->foto : null,
             'age' => $this->age,
             'no_hp' => $this->no_hp,
             'last_education' => $this->last_education,
