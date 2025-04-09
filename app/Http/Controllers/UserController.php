@@ -265,10 +265,9 @@ class UserController extends Controller
     public function updateChildren(Request $request)
     {
         $validate = Validator::make($request->all(), [
-            'anak' => 'required|array',
-            'anak.*.nama_lengkap' => 'required|string',
-            'anak.*.usia' => 'required|integer',
-            'anak.*.pendidikan_terakhir' => 'required|string',
+            'nama_lengkap' => 'required|string',
+            'usia' => 'required|integer',
+            'pendidikan_terakhir' => 'required|string',
         ]);
 
         if ($validate->fails()) {
@@ -279,30 +278,23 @@ class UserController extends Controller
             ], 400);
         } else {
             try {
-                DB::beginTransaction();
                 $data = $validate->validated();
 
                 $user = Auth::guard('user')->user();
 
-                UserChild::where('users_id', $user->id)->delete();
+                $child = UserChild::where('users_id', $user->id)->first();
 
-                foreach ($data['anak'] as $a) {
-                    UserChild::create([
-                        'users_id' => $user->id,
-                        'name' => $a['nama_lengkap'],
-                        'age' => $a['usia'],
-                        'last_education' => $a['pendidikan_terakhir']
-                    ]);
-                }
-
-                DB::commit();
+                $child->update([
+                    'name' => $data['nama_lengkap'],
+                    'age' => $data['usia'],
+                    'last_education' => $data['pendidikan_terakhir']
+                ]);
 
                 return response()->json([
                     'code' => 200,
                     'message' => 'Data anak berhasil diperbarui'
                 ]);
             } catch (\Throwable $th) {
-                DB::rollback();
                 Log::error('UserController.updateChildren: ' . $th->getMessage());
                 return response()->json([
                     'code' => 500,
