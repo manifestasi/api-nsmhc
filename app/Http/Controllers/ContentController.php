@@ -48,7 +48,7 @@ class ContentController extends Controller
         try {
             $users = User::with('contents')
                 ->filter(request(['search']))
-                ->orderByDesc('created_at')
+                ->orderByDesc('id')
                 ->paginate(8)
                 ->withQueryString();
             $allContent = Content::all();
