@@ -183,7 +183,7 @@ class UserController extends Controller
         try {
             $user = User::with('userProfile', 'userChild')
                 ->filter(request(['search']))
-                ->orderByDesc('created_at')
+                ->orderByDesc('id')
                 ->paginate(8)
                 ->withQueryString();
 
