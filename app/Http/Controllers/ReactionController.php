@@ -38,7 +38,7 @@ class ReactionController extends Controller
         try {
             $users = User::with('reactions')
                 ->filter(request(['search']))
-                ->orderByDesc('created_at')
+                ->orderByDesc('id')
                 ->paginate(8)
                 ->withQueryString();
             $allReaction = Reaction::all();
