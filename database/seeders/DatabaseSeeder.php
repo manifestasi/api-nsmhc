@@ -25,9 +25,9 @@ class DatabaseSeeder extends Seeder
             AdminSeeder::class,
             ContentSeeder::class,
             ReactionSeeder::class,
-            UserSeeder::class,
-            ProgressSeeder::class,
-            QuestionSeeder::class
+            // UserSeeder::class,
+            // ProgressSeeder::class,
+            // QuestionSeeder::class
         ]);
     }
 }
