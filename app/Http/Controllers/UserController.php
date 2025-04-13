@@ -352,6 +352,7 @@ class UserController extends Controller
     public function updateProfile(Request $request)
     {
         $validate = Validator::make($request->all(), [
+            'nama' => 'required|string',
             'usia' => 'required|integer',
             'pendidikan_terakhir' => 'required|string',
             'pekerjaan_terakhir' => 'required|string',
@@ -368,8 +369,13 @@ class UserController extends Controller
             ], 400);
         } else {
             try {
+                DB::beginTransaction();
                 $data = $validate->validated();
                 $user = Auth::guard('user')->user();
+
+                $user->update([
+                    'name' => $data['nama']
+                ]);
 
                 $userProfile = UserProfile::where('users_id', $user->id)->first();
 
@@ -398,11 +404,13 @@ class UserController extends Controller
                     ]);
                 }
 
+                DB::commit();
                 return response()->json([
                     'code' => 200,
                     'message' => 'Data diri berhasil di perbarui'
                 ]);
             } catch (\Throwable $th) {
+                DB::rollback();
                 Log::error('UserController.updateProfile: ' . $th->getMessage());
                 return response()->json([
                     'code' => 500,
