@@ -48,11 +48,24 @@ class QuestionController extends Controller
                 'message' => 'Ambil data grafik Pertanyaan dan jawaban berhasil',
                 'data' => $question->map(function ($e, $i) {
                     $answers = Util::countDuplicate($e->answers, 'answer_text');
+
+                    // Default 0
+                    $yes = 0;
+                    $no = 0;
+
+                    foreach ($answers as $ans) {
+                        if ($ans['answer_text'] === 'Sudah') {
+                            $yes = $ans['count'];
+                        } elseif ($ans['answer_text'] === 'Belum') {
+                            $no = $ans['count'];
+                        }
+                    }
+
                     return [
                         'name' => Util::getAbjad($i),
                         'question' => $e->question,
-                        'yes' => $answers[0]['answer_text'] == "Sudah" ? $answers[0]['count'] : 0,
-                        'no' => $answers[1]['answer_text'] == "Belum" ? $answers[1]['count'] : 0
+                        'yes' => $yes,
+                        'no' => $no
                     ];
                 })
             ]);
